@@ -1,4 +1,81 @@
-<div class="extracurriculars-section">
-  <h1>Extracurriculars</h1>
-  <!-- Extracurriculars content will be added here -->
+<div data-controller="extracurriculars">
+  <div data-extracurriculars-target="storageWarning" class="storage-warning" hidden>
+    Storage unavailable — your data won't be saved.
+  </div>
+
+  <%# LIST VIEW — hidden when detail is active %>
+  <div data-extracurriculars-target="listView">
+    <div class="section-header">
+      <h1 class="section-title">Extracurriculars</h1>
+      <button class="btn btn--primary" data-action="extracurriculars#add">Add</button>
+    </div>
+
+    <div data-extracurriculars-target="form" hidden>
+      <div class="inline-form">
+        <div class="form-row">
+          <div class="form-field">
+            <label for="ec_name">Name</label>
+            <input type="text" id="ec_name" data-extracurriculars-target="name" placeholder="e.g. Soccer Team">
+          </div>
+          <div class="form-field">
+            <label for="ec_role">Role</label>
+            <input type="text" id="ec_role" data-extracurriculars-target="role" placeholder="e.g. Captain">
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="ec_notes">Notes</label>
+          <input type="text" id="ec_notes" data-extracurriculars-target="notes" placeholder="e.g. Tuesdays and Thursdays">
+        </div>
+        <p class="error-msg" data-extracurriculars-target="error"></p>
+        <div class="form-actions">
+          <button class="btn btn--primary" data-action="extracurriculars#save">Save</button>
+          <button class="btn btn--ghost" data-action="extracurriculars#cancel">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div data-extracurriculars-target="list"></div>
+  </div>
+
+  <%# DETAIL VIEW — hidden by default %>
+  <div data-extracurriculars-target="detail" hidden>
+    <button class="back-link" data-action="extracurriculars#backToList">Back</button>
+
+    <div class="section-header">
+      <div>
+        <h1 class="section-title" data-extracurriculars-target="detailTitle"></h1>
+        <p class="entry__meta" data-extracurriculars-target="detailRole"></p>
+      </div>
+      <div style="display:flex; align-items:center; gap:16px;">
+        <span class="total-label" data-extracurriculars-target="detailTotal"></span>
+        <button class="btn btn--primary" data-action="extracurriculars#addLog">Add Log</button>
+      </div>
+    </div>
+
+    <div data-extracurriculars-target="logForm" hidden>
+      <div class="inline-form">
+        <div class="form-row">
+          <div class="form-field">
+            <label for="ec_log_description">Description</label>
+            <input type="text" id="ec_log_description" data-extracurriculars-target="logDescription" placeholder="e.g. Practice session">
+          </div>
+          <div class="form-field">
+            <label for="ec_log_date">Date</label>
+            <input type="text" id="ec_log_date" data-extracurriculars-target="logDate" placeholder="YYYY-MM-DD">
+          </div>
+          <div class="form-field">
+            <label for="ec_log_hours">Hours</label>
+            <input type="number" id="ec_log_hours" min="0.5" step="0.5" data-extracurriculars-target="logHours" placeholder="e.g. 2">
+          </div>
+        </div>
+        <p class="error-msg" data-extracurriculars-target="logError"></p>
+        <div class="form-actions">
+          <button class="btn btn--primary" data-action="extracurriculars#saveLog">Save Log</button>
+          <button class="btn btn--ghost" data-action="extracurriculars#cancelLog">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div data-extracurriculars-target="logList"></div>
+  </div>
 </div>
