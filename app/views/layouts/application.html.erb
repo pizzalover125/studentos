@@ -15,6 +15,8 @@
     <div class="app">
       <aside class="sidebar">
         <div class="sidebar__title">Student OS</div>
+        <%= link_to "Classes", classes_path,
+              class: "sidebar__link #{current_page?(classes_path) ? 'sidebar__link--active' : ''}" %>
         <%= link_to "Homework", homework_path,
               class: "sidebar__link #{current_page?(homework_path) || current_page?(root_path) ? 'sidebar__link--active' : ''}" %>
         <%= link_to "Tests", tests_path,
