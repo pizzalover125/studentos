@@ -39,7 +39,7 @@ class TestsTest < ApplicationSystemTestCase
     visit tests_path
     click_button "Add"
     click_button "Save"
-    assert_text "Title and date are required"
+    assert_text "Title and date are required."
   end
 
   test "marking a test as done and undoing" do
