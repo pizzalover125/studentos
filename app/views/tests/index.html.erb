@@ -1,4 +1,42 @@
-<div class="tests-section">
-  <h1>Tests</h1>
-  <!-- Tests content will be added here -->
+<div data-controller="tests">
+  <div data-tests-target="storageWarning" class="storage-warning" hidden>
+    Storage unavailable — your data won't be saved.
+  </div>
+
+  <div class="section-header">
+    <h1 class="section-title">Tests</h1>
+    <button class="btn btn--primary" data-action="tests#add">Add</button>
+  </div>
+
+  <div data-tests-target="form" hidden>
+    <div class="inline-form">
+      <div class="form-row">
+        <div class="form-field">
+          <label for="tests_title">Title</label>
+          <input type="text" id="tests_title" data-tests-target="title" placeholder="Exam or quiz name">
+        </div>
+        <div class="form-field">
+          <label for="tests_subject">Subject</label>
+          <input type="text" id="tests_subject" data-tests-target="subject" placeholder="e.g. Biology">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label for="tests_date">Date</label>
+          <input type="text" id="tests_date" data-tests-target="date" placeholder="YYYY-MM-DD">
+        </div>
+        <div class="form-field">
+          <label for="tests_notes">Notes</label>
+          <input type="text" id="tests_notes" data-tests-target="notes" placeholder="e.g. Chapters 1-5">
+        </div>
+      </div>
+      <p class="error-msg" data-tests-target="error"></p>
+      <div class="form-actions">
+        <button class="btn btn--primary" data-action="tests#save">Save</button>
+        <button class="btn btn--ghost" data-action="tests#cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div data-tests-target="list"></div>
 </div>
