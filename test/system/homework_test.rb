@@ -38,7 +38,7 @@ class HomeworkTest < ApplicationSystemTestCase
     visit homework_path
     click_button "Add"
     click_button "Save"
-    assert_text "Title and due date are required"
+    assert_text "Title and due date are required."
   end
 
   test "marking homework as done and undoing" do

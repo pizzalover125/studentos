@@ -35,6 +35,7 @@ export default class extends Controller {
   }
 
   add() {
+    this.populateSubject()
     this.formTarget.hidden = false
     this.titleTarget.focus()
   }
