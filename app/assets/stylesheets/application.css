@@ -124,6 +124,7 @@ body {
   text-transform: uppercase; letter-spacing: 0.04em;
 }
 .form-field input,
+.form-field select,
 .form-field textarea {
   padding: 8px 10px;
   border: 1px solid var(--border);
@@ -136,8 +137,10 @@ body {
   width: 100%;
 }
 .form-field input:focus,
+.form-field select:focus,
 .form-field textarea:focus { border-color: var(--accent); background: var(--surface); }
 .form-field input:focus-visible,
+.form-field select:focus-visible,
 .form-field textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .form-field textarea { resize: vertical; min-height: 72px; }
 .form-actions { display: flex; gap: 8px; margin-top: 4px; }
