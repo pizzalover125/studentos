@@ -8,14 +8,30 @@ class TestsTest < ApplicationSystemTestCase
 
   test "adding a test" do
     visit tests_path
+    page.execute_script(<<~JS)
+      localStorage.setItem('student_os.classes', JSON.stringify([
+        { id: '1', name: 'Math', description: '' }
+      ]))
+    JS
+    visit tests_path
     click_button "Add"
     fill_in "Title", with: "Algebra midterm"
-    fill_in "Subject", with: "Math"
-    find("[data-tests-target='date']").set("2026-05-01")
+    select "Math", from: "tests_subject"
+    page.execute_script("document.getElementById('tests_date').value = '2026-05-01'")
     fill_in "Notes", with: "Chapters 1-5"
     click_button "Save"
     assert_text "Algebra midterm"
     assert_text "Math"
+    assert_text "2026-05-01"
+  end
+
+  test "adding a test without subject" do
+    visit tests_path
+    click_button "Add"
+    fill_in "Title", with: "Pop quiz"
+    page.execute_script("document.getElementById('tests_date').value = '2026-05-01'")
+    click_button "Save"
+    assert_text "Pop quiz"
     assert_text "2026-05-01"
   end
 

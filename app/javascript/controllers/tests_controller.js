@@ -10,7 +10,28 @@ export default class extends Controller {
     if (!storageAvailable()) {
       this.storageWarningTarget.hidden = false
     }
+    this.populateSubject()
     this.render()
+  }
+
+  populateSubject() {
+    const classes = readStorage("student_os.classes")
+    const select = this.subjectTarget
+    while (select.options.length > 1) select.remove(1)
+    if (classes.length === 0) {
+      const opt = document.createElement("option")
+      opt.value = ""
+      opt.textContent = "No classes added yet"
+      opt.disabled = true
+      select.appendChild(opt)
+    } else {
+      classes.forEach(cls => {
+        const opt = document.createElement("option")
+        opt.value = cls.name
+        opt.textContent = cls.name
+        select.appendChild(opt)
+      })
+    }
   }
 
   add() {
@@ -26,8 +47,8 @@ export default class extends Controller {
 
   save() {
     const title = this.titleTarget.value.trim()
-    const subject = this.subjectTarget.value.trim()
-    const date = this.dateTarget.value.trim()
+    const subject = this.subjectTarget.value
+    const date = this.dateTarget.value
     const notes = this.notesTarget.value.trim()
 
     if (!title || !date) {
