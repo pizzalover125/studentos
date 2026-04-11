@@ -11,6 +11,11 @@
   --font: 'Inter', system-ui, sans-serif;
   --sidebar-width: 220px;
   --radius: 6px;
+  --surface-hover: #f0f0ee;
+  --surface-active: #ededeb;
+  --warning-bg: #fef9c3;
+  --warning-border: #fde047;
+  --warning-text: #713f12;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -53,8 +58,8 @@ body {
   font-size: 14px;
   margin-bottom: 2px;
 }
-.sidebar__link:hover { background: #f0f0ee; color: var(--text-primary); }
-.sidebar__link--active { background: #ededeb; color: var(--text-primary); font-weight: 500; }
+.sidebar__link:hover { background: var(--surface-hover); color: var(--text-primary); }
+.sidebar__link--active { background: var(--surface-active); color: var(--text-primary); font-weight: 500; }
 
 .main { flex: 1; overflow-y: auto; padding: 48px 56px; }
 
@@ -82,7 +87,7 @@ body {
 .btn--primary { background: var(--accent); color: white; border-color: var(--accent); }
 .btn--primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
 .btn--ghost { background: transparent; color: var(--text-secondary); border-color: var(--border); }
-.btn--ghost:hover { background: #f0f0ee; color: var(--text-primary); }
+.btn--ghost:hover { background: var(--surface-hover); color: var(--text-primary); }
 .btn--link-danger {
   background: none; border: none; color: var(--danger);
   font-size: 13px; cursor: pointer; font-family: var(--font); padding: 4px 8px;
@@ -138,6 +143,8 @@ body {
 }
 .form-field input:focus,
 .form-field textarea:focus { border-color: var(--accent); background: var(--surface); }
+.form-field input:focus-visible,
+.form-field textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .form-field textarea { resize: vertical; min-height: 72px; }
 .form-actions { display: flex; gap: 8px; margin-top: 4px; }
 .error-msg { color: var(--danger); font-size: 13px; margin-top: 6px; min-height: 18px; }
@@ -149,9 +156,9 @@ body {
 
 /* Storage warning */
 .storage-warning {
-  background: #fef9c3; border: 1px solid #fde047;
+  background: var(--warning-bg); border: 1px solid var(--warning-border);
   border-radius: var(--radius); padding: 10px 14px;
-  font-size: 14px; margin-bottom: 20px; color: #713f12;
+  font-size: 14px; margin-bottom: 20px; color: var(--warning-text);
 }
 
 /* Extracurriculars: clickable activity name */
@@ -174,7 +181,7 @@ body {
 
 /* Hours badge */
 .hours-badge {
-  font-size: 12px; background: #ededeb; border-radius: 4px;
+  font-size: 12px; background: var(--surface-active); border-radius: 4px;
   padding: 2px 8px; color: var(--text-secondary); font-weight: 500;
 }
 
