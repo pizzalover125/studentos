@@ -1,4 +1,36 @@
-<div class="homework-section">
-  <h1>Homework</h1>
-  <!-- Homework content will be added here -->
+<div data-controller="homework">
+  <div data-homework-target="storageWarning" class="storage-warning" hidden>
+    Storage unavailable — your data won't be saved.
+  </div>
+
+  <div class="section-header">
+    <h1 class="section-title">Homework</h1>
+    <button class="btn btn--primary" data-action="homework#add">Add</button>
+  </div>
+
+  <div data-homework-target="form" hidden>
+    <div class="inline-form">
+      <div class="form-row">
+        <div class="form-field">
+          <label for="homework_title">Title</label>
+          <input type="text" id="homework_title" data-homework-target="title" placeholder="Assignment title">
+        </div>
+        <div class="form-field">
+          <label for="homework_subject">Subject</label>
+          <input type="text" id="homework_subject" data-homework-target="subject" placeholder="e.g. Math">
+        </div>
+      </div>
+      <div class="form-field">
+        <label for="homework_due_date">Due date</label>
+        <input type="text" id="homework_due_date" data-homework-target="dueDate" placeholder="YYYY-MM-DD">
+      </div>
+      <p class="error-msg" data-homework-target="error"></p>
+      <div class="form-actions">
+        <button class="btn btn--primary" data-action="homework#save">Save</button>
+        <button class="btn btn--ghost" data-action="homework#cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div data-homework-target="list"></div>
 </div>
