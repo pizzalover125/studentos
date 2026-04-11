@@ -7,6 +7,7 @@ class HomeworkTest < ApplicationSystemTestCase
   end
 
   test "adding a homework assignment" do
+    visit homework_path
     page.execute_script(<<~JS)
       localStorage.setItem('student_os.classes', JSON.stringify([
         { id: '1', name: 'Math', description: '' }
@@ -16,7 +17,7 @@ class HomeworkTest < ApplicationSystemTestCase
     click_button "Add"
     fill_in "Title", with: "Math worksheet"
     select "Math", from: "homework_subject"
-    page.execute_script("document.querySelector('[data-homework-target=\\'dueDate\\']').value = '2026-04-20'")
+    page.execute_script("document.getElementById('homework_due_date').value = '2026-04-20'")
     click_button "Save"
     assert_text "Math worksheet"
     assert_text "Math"
@@ -27,7 +28,7 @@ class HomeworkTest < ApplicationSystemTestCase
     visit homework_path
     click_button "Add"
     fill_in "Title", with: "Reading"
-    page.execute_script("document.querySelector('[data-homework-target=\\'dueDate\\']').value = '2026-04-20'")
+    page.execute_script("document.getElementById('homework_due_date').value = '2026-04-20'")
     click_button "Save"
     assert_text "Reading"
     assert_text "2026-04-20"
