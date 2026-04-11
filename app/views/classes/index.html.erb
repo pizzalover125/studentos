@@ -1,1 +1,32 @@
-<p>Classes coming soon.</p>
+<div data-controller="classes">
+  <div data-classes-target="storageWarning" class="storage-warning" hidden>
+    Storage unavailable — your data won't be saved.
+  </div>
+
+  <div class="section-header">
+    <h1 class="section-title">Classes</h1>
+    <button class="btn btn--primary" data-action="classes#add">Add</button>
+  </div>
+
+  <div data-classes-target="form" hidden>
+    <div class="inline-form">
+      <div class="form-row">
+        <div class="form-field">
+          <label for="classes_name">Name</label>
+          <input type="text" id="classes_name" data-classes-target="name" placeholder="e.g. AP Biology">
+        </div>
+        <div class="form-field">
+          <label for="classes_description">Description</label>
+          <input type="text" id="classes_description" data-classes-target="description" placeholder="Optional (e.g. Mr. Smith, Period 3)">
+        </div>
+      </div>
+      <p class="error-msg" data-classes-target="error"></p>
+      <div class="form-actions">
+        <button class="btn btn--primary" data-action="classes#save">Save</button>
+        <button class="btn btn--ghost" data-action="classes#cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div data-classes-target="list"></div>
+</div>
