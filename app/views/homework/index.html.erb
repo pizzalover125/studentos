@@ -17,12 +17,14 @@
         </div>
         <div class="form-field">
           <label for="homework_subject">Subject</label>
-          <input type="text" id="homework_subject" data-homework-target="subject" placeholder="e.g. Math">
+          <select id="homework_subject" data-homework-target="subject">
+            <option value="">— select a class —</option>
+          </select>
         </div>
       </div>
       <div class="form-field">
         <label for="homework_due_date">Due date</label>
-        <input type="text" id="homework_due_date" data-homework-target="dueDate" placeholder="YYYY-MM-DD">
+        <input type="date" id="homework_due_date" data-homework-target="dueDate">
       </div>
       <p class="error-msg" data-homework-target="error"></p>
       <div class="form-actions">
