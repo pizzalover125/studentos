@@ -20,14 +20,13 @@ class ApplicationController < ActionController::Base
   end
 
   def token_expired?(token)
-    payload, = JWT.decode(token, ENV.fetch("SUPABASE_JWT_SECRET"), true, { algorithm: "HS256" })
-    payload["exp"] < Time.now.to_i
+    JWT.decode(token, ENV.fetch("SUPABASE_JWT_SECRET"), true, { algorithm: "HS256" })
+    false
   rescue JWT::DecodeError
     true
   end
 
   def authenticated?
-    token = session[:supabase_access_token]
-    token.present? && !token_expired?(token)
+    session[:supabase_access_token].present?
   end
 end
