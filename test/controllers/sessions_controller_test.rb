@@ -34,4 +34,77 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
     assert_select "form[action='#{login_path}']"
   end
+
+  test "GET /login/otp renders OTP form when pending_otp_email is set" do
+    stub_request(:post, "https://test.supabase.co/auth/v1/otp")
+      .to_return(status: 200, body: "{}", headers: { "Content-Type" => "application/json" })
+    post login_path, params: { email: "admin@example.com" }
+
+    get login_otp_path
+    assert_response :success
+    assert_select "form[action='#{login_verify_otp_path}']"
+    assert_select "input[name='token']"
+  end
+
+  test "GET /login/otp redirects to login when pending_otp_email missing" do
+    get login_otp_path
+    assert_redirected_to login_path
+  end
+
+  test "POST /login/verify_otp with valid token sets session and redirects to root" do
+    valid_token = JWT.encode(
+      { "sub" => "user-id", "exp" => 1.hour.from_now.to_i, "aud" => "authenticated" },
+      ENV.fetch("SUPABASE_JWT_SECRET"), "HS256"
+    )
+    stub_request(:post, "https://test.supabase.co/auth/v1/otp")
+      .to_return(status: 200, body: "{}", headers: { "Content-Type" => "application/json" })
+    stub_request(:post, "https://test.supabase.co/auth/v1/verify")
+      .with(body: { type: "email", email: "admin@example.com", token: "123456" }.to_json)
+      .to_return(
+        status: 200,
+        body: { access_token: valid_token }.to_json,
+        headers: { "Content-Type" => "application/json" }
+      )
+
+    post login_path, params: { email: "admin@example.com" }
+    post login_verify_otp_path, params: { token: "123456" }
+
+    assert_redirected_to root_path
+    follow_redirect!
+    assert_response :success
+  end
+
+  test "POST /login/verify_otp with invalid token re-renders OTP form" do
+    stub_request(:post, "https://test.supabase.co/auth/v1/otp")
+      .to_return(status: 200, body: "{}", headers: { "Content-Type" => "application/json" })
+    stub_request(:post, "https://test.supabase.co/auth/v1/verify")
+      .to_return(status: 401, body: '{"message":"Invalid token"}', headers: { "Content-Type" => "application/json" })
+
+    post login_path, params: { email: "admin@example.com" }
+    post login_verify_otp_path, params: { token: "000000" }
+
+    assert_response :unprocessable_entity
+    assert_select "form[action='#{login_verify_otp_path}']"
+  end
+
+  test "POST /login/verify_otp clears pending_otp_email from session on success" do
+    valid_token = JWT.encode(
+      { "sub" => "user-id", "exp" => 1.hour.from_now.to_i, "aud" => "authenticated" },
+      ENV.fetch("SUPABASE_JWT_SECRET"), "HS256"
+    )
+    stub_request(:post, "https://test.supabase.co/auth/v1/otp")
+      .to_return(status: 200, body: "{}", headers: { "Content-Type" => "application/json" })
+    stub_request(:post, "https://test.supabase.co/auth/v1/verify")
+      .to_return(
+        status: 200,
+        body: { access_token: valid_token }.to_json,
+        headers: { "Content-Type" => "application/json" }
+      )
+
+    post login_path, params: { email: "admin@example.com" }
+    post login_verify_otp_path, params: { token: "123456" }
+
+    follow_redirect!
+    assert_response :success
+  end
 end
