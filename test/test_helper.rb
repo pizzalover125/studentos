@@ -11,17 +11,6 @@ require "webmock/minitest"
 
 WebMock.disable_net_connect!(allow_localhost: true)
 
-module AuthTestHelper
-  def sign_in_session
-    token = JWT.encode(
-      { "sub" => "test-user-id", "exp" => 1.hour.from_now.to_i, "aud" => "authenticated" },
-      ENV.fetch("SUPABASE_JWT_SECRET"),
-      "HS256"
-    )
-    session[:supabase_access_token] = token
-  end
-end
-
 class ActionDispatch::IntegrationTest
   def sign_in
     get "/test/sign_in"
