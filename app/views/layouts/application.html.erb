@@ -27,6 +27,9 @@
               class: "sidebar__link #{current_page?(volunteer_path) ? 'sidebar__link--active' : ''}" %>
         <%= link_to "Extracurriculars", extracurriculars_path,
               class: "sidebar__link #{current_page?(extracurriculars_path) ? 'sidebar__link--active' : ''}" %>
+      <%= button_to "Sign out", logout_path, method: :delete,
+            class: "sidebar__link sidebar__link--logout",
+            form: { data: { turbo_confirm: false } } %>
       </aside>
       <main class="main">
         <%= yield %>

@@ -525,3 +525,14 @@ body {
   font-size: 1.25rem;
   text-align: center;
 }
+
+.sidebar__link--logout {
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  margin-top: auto;
+  color: var(--text-secondary);
+}
+.sidebar__link--logout:hover { color: var(--danger); background: transparent; }
