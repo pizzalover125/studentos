@@ -107,4 +107,13 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_response :success
   end
+
+  test "DELETE /session clears session and redirects to login" do
+    sign_in
+    delete logout_path
+    assert_redirected_to login_path
+    follow_redirect!
+    get root_path
+    assert_redirected_to login_path
+  end
 end

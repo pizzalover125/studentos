@@ -29,4 +29,9 @@ class SessionsController < ApplicationController
     flash[:alert] = "Invalid or expired code. Request a new one."
     render :new_otp, status: :unprocessable_entity
   end
+
+  def destroy
+    reset_session
+    redirect_to login_path
+  end
 end
