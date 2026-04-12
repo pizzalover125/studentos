@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   get "classes",        to: "classes#index"
   get "homework",       to: "homework#index"
   get "tests",          to: "tests#index"
+  get "pomodoro",       to: "pomodoro#index"
   get "volunteer",      to: "volunteer#index"
   get "extracurriculars", to: "extracurriculars#index"
 end

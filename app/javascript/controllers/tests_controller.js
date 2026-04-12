@@ -4,34 +4,46 @@ import { readStorage, writeStorage, storageAvailable, escapeHtml } from "utils/s
 const KEY = "student_os.tests"
 
 export default class extends Controller {
-  static targets = ["list", "form", "title", "subject", "date", "notes", "error", "storageWarning"]
+  static targets = [
+    "list", "form", "title", "subject", "date", "notes", "error", "storageWarning",
+    "modal", "modalTitle", "modalSubject", "modalDate", "modalNotes", "modalError", "confirmModal"
+  ]
 
   connect() {
     if (!storageAvailable()) {
       this.storageWarningTarget.hidden = false
     }
+    this.editingId = null
     this.populateSubject()
     this.render()
   }
 
   populateSubject() {
     const classes = readStorage("student_os.classes")
-    const select = this.subjectTarget
-    while (select.options.length > 1) select.remove(1)
+    const selects = [this.subjectTarget, this.modalSubjectTarget]
+    selects.forEach(select => {
+      while (select.options.length > 1) select.remove(1)
+    })
+
     if (classes.length === 0) {
-      const opt = document.createElement("option")
-      opt.value = ""
-      opt.textContent = "No classes added yet"
-      opt.disabled = true
-      select.appendChild(opt)
-    } else {
-      classes.forEach(cls => {
+      selects.forEach(select => {
+        const opt = document.createElement("option")
+        opt.value = ""
+        opt.textContent = "No classes added yet"
+        opt.disabled = true
+        select.appendChild(opt)
+      })
+      return
+    }
+
+    classes.forEach(cls => {
+      selects.forEach(select => {
         const opt = document.createElement("option")
         opt.value = cls.name
         opt.textContent = cls.name
         select.appendChild(opt)
       })
-    }
+    })
   }
 
   add() {
@@ -58,7 +70,7 @@ export default class extends Controller {
     }
 
     const items = readStorage(KEY)
-    items.push({ id: Date.now().toString(), title, subject, date, notes, status: "upcoming" })
+    items.push({ id: Date.now().toString(), title, subject, date, notes })
     writeStorage(KEY, items)
 
     this.formTarget.hidden = true
@@ -67,18 +79,83 @@ export default class extends Controller {
     this.render()
   }
 
-  toggle(event) {
+  openEditor(event) {
     const id = event.currentTarget.dataset.id
+    const item = readStorage(KEY).find(test => test.id === id)
+    if (!item) return
+
+    this.populateSubject()
+    this.editingId = id
+    this.modalTitleTarget.value = item.title
+    this.modalSubjectTarget.value = item.subject || ""
+    this.modalDateTarget.value = item.date
+    this.modalNotesTarget.value = item.notes || ""
+    this.modalErrorTarget.textContent = ""
+    this.modalTarget.hidden = false
+    this.modalTitleTarget.focus()
+  }
+
+  closeEditor() {
+    this.closeDeleteConfirm()
+    this.modalTarget.hidden = true
+    this.editingId = null
+    this.modalTitleTarget.value = ""
+    this.modalSubjectTarget.value = ""
+    this.modalDateTarget.value = ""
+    this.modalNotesTarget.value = ""
+    this.modalErrorTarget.textContent = ""
+  }
+
+  closeEditorOnBackdrop(event) {
+    if (event.target !== event.currentTarget) return
+    this.closeEditor()
+  }
+
+  saveEdit() {
+    if (!this.editingId) return
+
+    const title = this.modalTitleTarget.value.trim()
+    const subject = this.modalSubjectTarget.value
+    const date = this.modalDateTarget.value
+    const notes = this.modalNotesTarget.value.trim()
+
+    if (!title || !date) {
+      this.modalErrorTarget.textContent = "Title and date are required."
+      return
+    }
+
     const items = readStorage(KEY)
-    const item = items.find(i => i.id === id)
-    if (item) item.status = item.status === "done" ? "upcoming" : "done"
+    const item = items.find(test => test.id === this.editingId)
+    if (!item) return
+
+    item.title = title
+    item.subject = subject
+    item.date = date
+    item.notes = notes
     writeStorage(KEY, items)
+    this.closeEditor()
     this.render()
   }
 
-  delete(event) {
-    const id = event.currentTarget.dataset.id
-    writeStorage(KEY, readStorage(KEY).filter(i => i.id !== id))
+  requestDeleteConfirmation() {
+    if (!this.editingId) return
+    this.confirmModalTarget.hidden = false
+  }
+
+  closeDeleteConfirm() {
+    this.confirmModalTarget.hidden = true
+  }
+
+  closeDeleteConfirmOnBackdrop(event) {
+    if (event.target !== event.currentTarget) return
+    this.closeDeleteConfirm()
+  }
+
+  deleteFromModal() {
+    if (!this.editingId) return
+    writeStorage(KEY, readStorage(KEY).filter(test => test.id !== this.editingId))
+    this.closeDeleteConfirm()
+    this.closeEditor()
     this.render()
   }
 
@@ -89,18 +166,12 @@ export default class extends Controller {
       return
     }
     this.listTarget.innerHTML = `<div class="entry-list">${items.map(item => `
-      <div class="entry ${item.status === "done" ? "entry--done" : ""}">
+      <div class="entry" data-id="${item.id}" data-action="click->tests#openEditor">
         <div class="entry__body">
           <span class="entry__title">${escapeHtml(item.title)}</span>
           ${item.subject ? `<span class="entry__meta">${escapeHtml(item.subject)}</span>` : ""}
           <span class="entry__meta">${escapeHtml(item.date)}</span>
           ${item.notes ? `<span class="entry__meta">${escapeHtml(item.notes)}</span>` : ""}
-        </div>
-        <div class="entry__actions">
-          <button class="btn btn--ghost" data-id="${item.id}" data-action="tests#toggle">
-            ${item.status === "done" ? "Undo" : "Done"}
-          </button>
-          <button class="btn btn--link-danger" data-id="${item.id}" data-action="tests#delete">Delete</button>
         </div>
       </div>
     `).join("")}</div>`

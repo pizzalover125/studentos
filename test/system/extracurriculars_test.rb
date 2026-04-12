@@ -53,7 +53,7 @@ class ExtracurricularsTest < ApplicationSystemTestCase
     assert_equal "[]", logs
   end
 
-  test "clicking an extracurricular name opens the detail view" do
+  test "clicking an extracurricular row opens the detail view" do
     visit extracurriculars_path
     page.execute_script(<<~JS)
       localStorage.setItem('student_os.extracurriculars', JSON.stringify([
@@ -61,7 +61,7 @@ class ExtracurricularsTest < ApplicationSystemTestCase
       ]))
     JS
     visit extracurriculars_path
-    click_button "Debate Club"
+    find(".entry", text: "Debate Club").click
     assert_text "Add Log"
     assert_button "Back"
   end
@@ -74,7 +74,7 @@ class ExtracurricularsTest < ApplicationSystemTestCase
       ]))
     JS
     visit extracurriculars_path
-    click_button "Debate Club"
+    find(".entry", text: "Debate Club").click
     click_button "Add Log"
     fill_in "Description", with: "Practice session"
     find("[data-extracurriculars-target='logDate']").set("2026-04-15")
@@ -96,7 +96,7 @@ class ExtracurricularsTest < ApplicationSystemTestCase
       ]))
     JS
     visit extracurriculars_path
-    click_button "Debate Club"
+    find(".entry", text: "Debate Club").click
     assert_text "Practice"
     click_button "Delete"
     assert_text "No logs yet"
@@ -110,7 +110,7 @@ class ExtracurricularsTest < ApplicationSystemTestCase
       ]))
     JS
     visit extracurriculars_path
-    click_button "Chess Club"
+    find(".entry", text: "Chess Club").click
     click_button "Back"
     assert_text "Chess Club"
     assert_text "Member"

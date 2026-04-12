@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Lora:wght@400;500;600&family=Merriweather:wght@400;700&family=Press+Start+2P&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
   <body>
-    <div class="app">
+    <div class="app" data-controller="theme taskbar">
       <aside class="sidebar">
         <div class="sidebar__title">Student OS</div>
         <%= link_to "Classes", classes_path,
@@ -21,6 +21,8 @@
               class: "sidebar__link #{current_page?(homework_path) || current_page?(root_path) ? 'sidebar__link--active' : ''}" %>
         <%= link_to "Tests", tests_path,
               class: "sidebar__link #{current_page?(tests_path) ? 'sidebar__link--active' : ''}" %>
+        <%= link_to "Pomodoro", pomodoro_path,
+              class: "sidebar__link #{current_page?(pomodoro_path) ? 'sidebar__link--active' : ''}" %>
         <%= link_to "Volunteer", volunteer_path,
               class: "sidebar__link #{current_page?(volunteer_path) ? 'sidebar__link--active' : ''}" %>
         <%= link_to "Extracurriculars", extracurriculars_path,
@@ -29,6 +31,144 @@
       <main class="main">
         <%= yield %>
       </main>
+
+      <footer class="taskbar">
+        <div class="taskbar__left">
+          <span class="taskbar__item" data-taskbar-target="pomodoro" hidden></span>
+        </div>
+        <div class="taskbar__right" data-taskbar-target="clock"></div>
+      </footer>
+
+      <div class="modal-backdrop modal-backdrop--confirm" data-taskbar-target="decisionModal" hidden>
+        <div class="modal-card modal-card--confirm" role="dialog" aria-modal="true" aria-labelledby="pomodoro_end_heading">
+          <h2 id="pomodoro_end_heading" class="modal-title">Work timer ended</h2>
+          <p class="modal-copy">Start play time or stop the timer.</p>
+          <div class="form-actions">
+            <button class="btn btn--primary" data-action="taskbar#startPlayTime">Start play time</button>
+            <button class="btn btn--ghost" data-action="taskbar#stopPomodoro">Stop timer</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="theme-settings-button" aria-label="Theme settings" data-action="theme#open">
+        <svg class="theme-settings-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <line x1="4" y1="7" x2="20" y2="7"></line>
+          <circle cx="9" cy="7" r="2"></circle>
+          <line x1="4" y1="12" x2="20" y2="12"></line>
+          <circle cx="15" cy="12" r="2"></circle>
+          <line x1="4" y1="17" x2="20" y2="17"></line>
+          <circle cx="11" cy="17" r="2"></circle>
+        </svg>
+      </button>
+
+      <div class="modal-backdrop" data-theme-target="modal" data-action="click->theme#closeOnBackdrop" hidden>
+        <div class="modal-card modal-card--confirm" role="dialog" aria-modal="true" aria-labelledby="theme_settings_heading">
+          <h2 id="theme_settings_heading" class="theme-mode-label">Color</h2>
+          <div class="theme-options" role="radiogroup" aria-label="Theme options">
+            <% [
+              { id: "indigo", name: "Indigo", accent: "#4f46e5", hover: "#4338ca" },
+              { id: "blue", name: "Blue", accent: "#2563eb", hover: "#1d4ed8" },
+              { id: "cyan", name: "Cyan", accent: "#0891b2", hover: "#0e7490" },
+              { id: "teal", name: "Teal", accent: "#0d9488", hover: "#0f766e" },
+              { id: "emerald", name: "Emerald", accent: "#059669", hover: "#047857" },
+              { id: "green", name: "Green", accent: "#16a34a", hover: "#15803d" },
+              { id: "lime", name: "Lime", accent: "#65a30d", hover: "#4d7c0f" },
+              { id: "yellow", name: "Yellow", accent: "#ca8a04", hover: "#a16207" },
+              { id: "amber", name: "Amber", accent: "#d97706", hover: "#b45309" },
+              { id: "orange", name: "Orange", accent: "#ea580c", hover: "#c2410c" },
+              { id: "red", name: "Red", accent: "#dc2626", hover: "#b91c1c" },
+              { id: "rose", name: "Rose", accent: "#e11d48", hover: "#be123c" },
+              { id: "pink", name: "Pink", accent: "#db2777", hover: "#be185d" },
+              { id: "fuchsia", name: "Fuchsia", accent: "#c026d3", hover: "#a21caf" },
+              { id: "purple", name: "Purple", accent: "#9333ea", hover: "#7e22ce" },
+              { id: "violet", name: "Violet", accent: "#7c3aed", hover: "#6d28d9" }
+            ].each do |theme| %>
+              <button
+                type="button"
+                class="theme-option"
+                aria-label="<%= theme[:name] %>"
+                title="<%= theme[:name] %>"
+                data-theme-target="option"
+                data-theme-id="<%= theme[:id] %>"
+                data-theme-accent="<%= theme[:accent] %>"
+                data-theme-hover="<%= theme[:hover] %>"
+                data-action="theme#selectTheme"
+              >
+                <span class="theme-option__swatch" style="--swatch-color: <%= theme[:accent] %>;"></span>
+              </button>
+            <% end %>
+          </div>
+
+          <div class="theme-mode-row">
+            <div class="theme-mode-label">Appearance</div>
+            <div class="theme-mode-picker" role="radiogroup" aria-label="Appearance mode">
+              <button
+                type="button"
+                class="theme-mode-option"
+                aria-label="Light mode"
+                data-theme-target="modeOption"
+                data-mode="light"
+                data-action="theme#selectMode"
+              >
+                Light
+              </button>
+              <button
+                type="button"
+                class="theme-mode-option"
+                aria-label="Dark mode"
+                data-theme-target="modeOption"
+                data-mode="dark"
+                data-action="theme#selectMode"
+              >
+                Dark
+              </button>
+              <button
+                type="button"
+                class="theme-mode-option"
+                aria-label="System mode"
+                data-theme-target="modeOption"
+                data-mode="system"
+                data-action="theme#selectMode"
+              >
+                System
+              </button>
+            </div>
+          </div>
+
+          <div class="theme-font-row">
+            <div class="theme-mode-label">Font</div>
+            <div class="theme-font-options" role="radiogroup" aria-label="Font options">
+              <% [
+                { id: "sans", name: "Sans", family: "'Inter', system-ui, sans-serif" },
+                { id: "modern", name: "Modern", family: "'Space Grotesk', system-ui, sans-serif" },
+                { id: "serif", name: "Serif", family: "'Lora', Georgia, serif" },
+                { id: "classic", name: "Classic", family: "'Merriweather', Georgia, serif" },
+                { id: "mono", name: "Mono", family: "'JetBrains Mono', ui-monospace, monospace" },
+                { id: "pixel", name: "Pixel", family: "'Press Start 2P', monospace" }
+              ].each do |font| %>
+                <button
+                  type="button"
+                  class="theme-font-option"
+                  aria-label="<%= font[:name] %>"
+                  data-theme-target="fontOption"
+                  data-font-id="<%= font[:id] %>"
+                  data-action="theme#selectFont"
+                >
+                  <span class="theme-font-option__name"><%= font[:name] %></span>
+                  <span class="theme-font-option__sample" style="font-family: <%= font[:family] %>;">Aa</span>
+                </button>
+              <% end %>
+            </div>
+          </div>
+
+          <p class="error-msg" data-theme-target="error"></p>
+          <div class="form-actions">
+            <button class="btn btn--primary" data-action="theme#save">Save</button>
+            <button class="btn btn--ghost" data-action="theme#reset">Reset</button>
+            <button class="btn btn--ghost" data-action="theme#close">Cancel</button>
+          </div>
+        </div>
+      </div>
     </div>
   </body>
 </html>

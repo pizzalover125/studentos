@@ -29,4 +29,37 @@
   </div>
 
   <div data-classes-target="list"></div>
+
+  <div class="modal-backdrop" data-classes-target="modal" data-action="click->classes#closeEditorOnBackdrop" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="classes_edit_heading">
+      <h2 id="classes_edit_heading" class="modal-title">Edit class</h2>
+      <div class="form-row">
+        <div class="form-field">
+          <label for="classes_edit_name">Edit name</label>
+          <input type="text" id="classes_edit_name" data-classes-target="modalName" placeholder="e.g. AP Biology">
+        </div>
+        <div class="form-field">
+          <label for="classes_edit_description">Edit description</label>
+          <input type="text" id="classes_edit_description" data-classes-target="modalDescription" placeholder="Optional (e.g. Mr. Smith, Period 3)">
+        </div>
+      </div>
+      <p class="error-msg" data-classes-target="modalError"></p>
+      <div class="form-actions">
+        <button class="btn btn--primary" data-action="classes#saveEdit">Save changes</button>
+        <button class="btn btn--danger" data-action="classes#requestDeleteConfirmation">Delete</button>
+        <button class="btn btn--ghost" data-action="classes#closeEditor">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop modal-backdrop--confirm" data-classes-target="confirmModal" data-action="click->classes#closeDeleteConfirmOnBackdrop" hidden>
+    <div class="modal-card modal-card--confirm" role="dialog" aria-modal="true" aria-labelledby="classes_delete_heading">
+      <h2 id="classes_delete_heading" class="modal-title">Delete class?</h2>
+      <p class="modal-copy">This action can’t be undone.</p>
+      <div class="form-actions">
+        <button class="btn btn--danger" data-action="classes#deleteFromModal">Delete item</button>
+        <button class="btn btn--ghost" data-action="classes#closeDeleteConfirm">Cancel</button>
+      </div>
+    </div>
+  </div>
 </div>

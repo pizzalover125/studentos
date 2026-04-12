@@ -59,6 +59,10 @@ export default class extends Controller {
     this.renderList()
   }
 
+  stopRowOpen(event) {
+    event.stopPropagation()
+  }
+
   showDetail(event) {
     this.currentId = event.currentTarget.dataset.id
     this.listViewTarget.hidden = true
@@ -121,15 +125,13 @@ export default class extends Controller {
       return
     }
     this.listTarget.innerHTML = `<div class="entry-list">${items.map(item => `
-      <div class="entry">
+      <div class="entry entry--clickable" data-id="${item.id}" data-action="click->extracurriculars#showDetail">
         <div class="entry__body">
-          <button class="entry__link" data-id="${item.id}" data-action="extracurriculars#showDetail">
-            ${escapeHtml(item.name)}
-          </button>
+          <span class="entry__title">${escapeHtml(item.name)}</span>
           ${item.role ? `<span class="entry__meta">${escapeHtml(item.role)}</span>` : ""}
         </div>
         <div class="entry__actions">
-          <button class="btn btn--link-danger" data-id="${item.id}" data-action="extracurriculars#delete">Delete</button>
+          <button class="btn btn--link-danger" data-id="${item.id}" data-action="click->extracurriculars#stopRowOpen extracurriculars#delete">Delete</button>
         </div>
       </div>
     `).join("")}</div>`

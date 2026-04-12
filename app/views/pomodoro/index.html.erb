@@ -1,0 +1,34 @@
+<div class="pomodoro-shell" data-controller="pomodoro">
+  <div class="inline-form timer-card">
+    <div class="timer-core" data-pomodoro-target="timerCore">
+      <p class="timer-phase" data-pomodoro-target="phaseLabel">Work</p>
+      <div class="timer-display" data-pomodoro-target="display">25:00</div>
+    </div>
+
+    <div class="form-actions timer-actions">
+      <button class="btn btn--primary" data-pomodoro-target="startButton" data-action="pomodoro#start">Start</button>
+      <button class="btn btn--ghost" data-pomodoro-target="pauseButton" data-action="pomodoro#pause">Pause</button>
+      <button class="btn btn--ghost" data-action="pomodoro#reset">Reset</button>
+      <button class="btn btn--ghost" data-action="pomodoro#openSettings">Settings</button>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" data-pomodoro-target="settingsModal" data-action="click->pomodoro#closeSettingsOnBackdrop" hidden>
+    <div class="modal-card modal-card--confirm" role="dialog" aria-modal="true" aria-labelledby="pomodoro_settings_heading">
+      <h2 id="pomodoro_settings_heading" class="modal-title">Pomodoro settings</h2>
+      <div class="form-field">
+        <label for="pomodoro_work_minutes">Work minutes</label>
+        <input type="number" id="pomodoro_work_minutes" min="1" step="1" data-pomodoro-target="workMinutes">
+      </div>
+      <div class="form-field">
+        <label for="pomodoro_play_minutes">Play minutes</label>
+        <input type="number" id="pomodoro_play_minutes" min="1" step="1" data-pomodoro-target="playMinutes">
+      </div>
+      <p class="error-msg" data-pomodoro-target="settingsError"></p>
+      <div class="form-actions">
+        <button class="btn btn--primary" data-action="pomodoro#saveSettings">Save</button>
+        <button class="btn btn--ghost" data-action="pomodoro#closeSettings">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>

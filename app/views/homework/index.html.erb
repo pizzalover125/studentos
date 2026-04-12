@@ -22,9 +22,15 @@
           </select>
         </div>
       </div>
-      <div class="form-field">
-        <label for="homework_due_date">Due date</label>
-        <input type="date" id="homework_due_date" data-homework-target="dueDate">
+      <div class="form-row">
+        <div class="form-field">
+          <label for="homework_due_date">Due date</label>
+          <input type="date" id="homework_due_date" data-homework-target="dueDate">
+        </div>
+        <div class="form-field">
+          <label for="homework_estimate_minutes">Estimated minutes</label>
+          <input type="number" id="homework_estimate_minutes" min="1" step="1" data-homework-target="estimateMinutes" placeholder="e.g. 45">
+        </div>
       </div>
       <p class="error-msg" data-homework-target="error"></p>
       <div class="form-actions">
@@ -35,4 +41,49 @@
   </div>
 
   <div data-homework-target="list"></div>
+
+  <div class="modal-backdrop" data-homework-target="modal" data-action="click->homework#closeEditorOnBackdrop" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="homework_edit_heading">
+      <h2 id="homework_edit_heading" class="modal-title">Edit homework</h2>
+      <div class="form-row">
+        <div class="form-field">
+          <label for="homework_edit_title">Edit title</label>
+          <input type="text" id="homework_edit_title" data-homework-target="modalTitle" placeholder="Assignment title">
+        </div>
+        <div class="form-field">
+          <label for="homework_edit_subject">Edit subject</label>
+          <select id="homework_edit_subject" data-homework-target="modalSubject">
+            <option value="">— select a class —</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label for="homework_edit_due_date">Edit due date</label>
+          <input type="date" id="homework_edit_due_date" data-homework-target="modalDueDate">
+        </div>
+        <div class="form-field">
+          <label for="homework_edit_estimate_minutes">Edit estimated minutes</label>
+          <input type="number" id="homework_edit_estimate_minutes" min="1" step="1" data-homework-target="modalEstimateMinutes" placeholder="e.g. 45">
+        </div>
+      </div>
+      <p class="error-msg" data-homework-target="modalError"></p>
+      <div class="form-actions">
+        <button class="btn btn--primary" data-action="homework#saveEdit">Save changes</button>
+        <button class="btn btn--danger" data-action="homework#requestDeleteConfirmation">Delete</button>
+        <button class="btn btn--ghost" data-action="homework#closeEditor">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop modal-backdrop--confirm" data-homework-target="confirmModal" data-action="click->homework#closeDeleteConfirmOnBackdrop" hidden>
+    <div class="modal-card modal-card--confirm" role="dialog" aria-modal="true" aria-labelledby="homework_delete_heading">
+      <h2 id="homework_delete_heading" class="modal-title">Delete homework?</h2>
+      <p class="modal-copy">This action can’t be undone.</p>
+      <div class="form-actions">
+        <button class="btn btn--danger" data-action="homework#deleteFromModal">Delete item</button>
+        <button class="btn btn--ghost" data-action="homework#closeDeleteConfirm">Cancel</button>
+      </div>
+    </div>
+  </div>
 </div>

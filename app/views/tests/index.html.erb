@@ -41,4 +41,49 @@
   </div>
 
   <div data-tests-target="list"></div>
+
+  <div class="modal-backdrop" data-tests-target="modal" data-action="click->tests#closeEditorOnBackdrop" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="tests_edit_heading">
+      <h2 id="tests_edit_heading" class="modal-title">Edit test</h2>
+      <div class="form-row">
+        <div class="form-field">
+          <label for="tests_edit_title">Edit title</label>
+          <input type="text" id="tests_edit_title" data-tests-target="modalTitle" placeholder="Exam or quiz name">
+        </div>
+        <div class="form-field">
+          <label for="tests_edit_subject">Edit subject</label>
+          <select id="tests_edit_subject" data-tests-target="modalSubject">
+            <option value="">— select a class —</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label for="tests_edit_date">Edit date</label>
+          <input type="date" id="tests_edit_date" data-tests-target="modalDate">
+        </div>
+        <div class="form-field">
+          <label for="tests_edit_notes">Edit notes</label>
+          <input type="text" id="tests_edit_notes" data-tests-target="modalNotes" placeholder="e.g. Chapters 1-5">
+        </div>
+      </div>
+      <p class="error-msg" data-tests-target="modalError"></p>
+      <div class="form-actions">
+        <button class="btn btn--primary" data-action="tests#saveEdit">Save changes</button>
+        <button class="btn btn--danger" data-action="tests#requestDeleteConfirmation">Delete</button>
+        <button class="btn btn--ghost" data-action="tests#closeEditor">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop modal-backdrop--confirm" data-tests-target="confirmModal" data-action="click->tests#closeDeleteConfirmOnBackdrop" hidden>
+    <div class="modal-card modal-card--confirm" role="dialog" aria-modal="true" aria-labelledby="tests_delete_heading">
+      <h2 id="tests_delete_heading" class="modal-title">Delete test?</h2>
+      <p class="modal-copy">This action can’t be undone.</p>
+      <div class="form-actions">
+        <button class="btn btn--danger" data-action="tests#deleteFromModal">Delete item</button>
+        <button class="btn btn--ghost" data-action="tests#closeDeleteConfirm">Cancel</button>
+      </div>
+    </div>
+  </div>
 </div>
