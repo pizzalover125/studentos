@@ -1,15 +1,37 @@
 ENV["RAILS_ENV"] ||= "test"
+
+# Test env vars — set before loading environment
+ENV["SUPABASE_URL"]        ||= "https://test.supabase.co"
+ENV["SUPABASE_ANON_KEY"]   ||= "test-anon-key"
+ENV["SUPABASE_JWT_SECRET"] ||= "test-jwt-secret-32-chars-padded!!"
+
 require_relative "../config/environment"
 require "rails/test_help"
+require "webmock/minitest"
+
+WebMock.disable_net_connect!(allow_localhost: true)
+
+module AuthTestHelper
+  def sign_in_session
+    token = JWT.encode(
+      { "sub" => "test-user-id", "exp" => 1.hour.from_now.to_i, "aud" => "authenticated" },
+      ENV.fetch("SUPABASE_JWT_SECRET"),
+      "HS256"
+    )
+    session[:supabase_access_token] = token
+  end
+end
+
+class ActionDispatch::IntegrationTest
+  def sign_in
+    get "/test/sign_in"
+    follow_redirect!
+  end
+end
 
 module ActiveSupport
   class TestCase
-    # Run tests in parallel with specified workers
     parallelize(workers: :number_of_processors)
-
-    # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
     fixtures :all
-
-    # Add more helper methods to be used by all tests here...
   end
 end
