@@ -14,6 +14,16 @@ class SupabaseAuthClient
     true
   end
 
+  def verify_otp(email:, token:)
+    response = post("/auth/v1/verify", { type: "email", email: email, token: token })
+    response["access_token"]
+  end
+
+  def verify_token_hash(token_hash:)
+    response = post("/auth/v1/verify", { type: "email", token_hash: token_hash })
+    response["access_token"]
+  end
+
   private
 
   def post(path, body)
