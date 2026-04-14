@@ -7,7 +7,7 @@ const DEFAULT_PLAY_MINUTES = 5
 
 export default class extends Controller {
   static targets = [
-    "display", "phaseLabel", "timerCore", "startButton", "pauseButton",
+    "display", "phaseLabel", "timerCore", "toggleButton",
     "settingsModal", "workMinutes", "playMinutes", "settingsError"
   ]
 
@@ -94,6 +94,15 @@ export default class extends Controller {
     }, 1000)
 
     this.updateButtons()
+  }
+
+  toggle() {
+    if (this.awaitingAcknowledgement) return
+    if (this.intervalId) {
+      this.pause()
+    } else {
+      this.start()
+    }
   }
 
   pause() {
@@ -295,8 +304,8 @@ export default class extends Controller {
 
   updateButtons() {
     const running = Boolean(this.intervalId)
-    this.startButtonTarget.disabled = running || this.awaitingAcknowledgement
-    this.pauseButtonTarget.disabled = !running
+    this.toggleButtonTarget.disabled = this.awaitingAcknowledgement
+    this.toggleButtonTarget.textContent = running ? "Pause" : "Start"
     this.persistTaskbarState()
   }
 

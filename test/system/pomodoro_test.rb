@@ -18,14 +18,12 @@ class PomodoroTest < ApplicationSystemTestCase
     assert_no_selector ".modal-backdrop:not([hidden])"
   end
 
-  test "start and pause toggle button states" do
+  test "start and pause use a single toggle button" do
     visit pomodoro_path
     click_button "Start"
-    assert_button "Start", disabled: true
     assert_button "Pause", disabled: false
     click_button "Pause"
     assert_button "Start", disabled: false
-    assert_button "Pause", disabled: true
   end
 
   test "work completion shows choice to start play or stop" do

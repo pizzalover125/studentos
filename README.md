@@ -1,24 +1,11 @@
-# README
+# Student OS
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Student OS is a Rails + Hotwire planner that stores all user data in browser
+`localStorage`. It does not require any external authentication provider.
 
-Things you may want to cover:
+## Local development
 
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+```bash
+bundle install
+bin/rails server
+```
