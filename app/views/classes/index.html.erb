@@ -7,7 +7,6 @@
     <h1 class="section-title">Classes</h1>
     <button class="btn btn--primary" data-action="classes#add">Add</button>
   </div>
-
   <div data-classes-target="form" hidden>
     <div class="inline-form">
       <div class="form-row">
@@ -29,9 +28,11 @@
   </div>
 
   <div data-classes-target="list"></div>
+  <p class="edit-hint">click to edit</p>
 
   <div class="modal-backdrop" data-classes-target="modal" data-action="click->classes#closeEditorOnBackdrop" hidden>
-    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="classes_edit_heading">
+    <div class="modal-card modal-card--with-close" role="dialog" aria-modal="true" aria-labelledby="classes_edit_heading">
+      <button class="modal-close" aria-label="Close class editor" data-action="classes#closeEditor">&times;</button>
       <h2 id="classes_edit_heading" class="modal-title">Edit class</h2>
       <div class="form-row">
         <div class="form-field">
@@ -47,7 +48,6 @@
       <div class="form-actions">
         <button class="btn btn--primary" data-action="classes#saveEdit">Save changes</button>
         <button class="btn btn--danger" data-action="classes#requestDeleteConfirmation">Delete</button>
-        <button class="btn btn--ghost" data-action="classes#closeEditor">Cancel</button>
       </div>
     </div>
   </div>

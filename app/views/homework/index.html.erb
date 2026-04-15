@@ -7,7 +7,6 @@
     <h1 class="section-title">Homework</h1>
     <button class="btn btn--primary" data-action="homework#add">Add</button>
   </div>
-
   <div data-homework-target="form" hidden>
     <div class="inline-form">
       <div class="form-row">
@@ -41,9 +40,11 @@
   </div>
 
   <div data-homework-target="list"></div>
+  <p class="edit-hint">click to edit</p>
 
   <div class="modal-backdrop" data-homework-target="modal" data-action="click->homework#closeEditorOnBackdrop" hidden>
-    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="homework_edit_heading">
+    <div class="modal-card modal-card--with-close" role="dialog" aria-modal="true" aria-labelledby="homework_edit_heading">
+      <button class="modal-close" aria-label="Close homework editor" data-action="homework#closeEditor">&times;</button>
       <h2 id="homework_edit_heading" class="modal-title">Edit homework</h2>
       <div class="form-row">
         <div class="form-field">
@@ -71,7 +72,6 @@
       <div class="form-actions">
         <button class="btn btn--primary" data-action="homework#saveEdit">Save changes</button>
         <button class="btn btn--danger" data-action="homework#requestDeleteConfirmation">Delete</button>
-        <button class="btn btn--ghost" data-action="homework#closeEditor">Cancel</button>
       </div>
     </div>
   </div>

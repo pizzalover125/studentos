@@ -7,7 +7,6 @@
     <h1 class="section-title">Tests</h1>
     <button class="btn btn--primary" data-action="tests#add">Add</button>
   </div>
-
   <div data-tests-target="form" hidden>
     <div class="inline-form">
       <div class="form-row">
@@ -41,9 +40,11 @@
   </div>
 
   <div data-tests-target="list"></div>
+  <p class="edit-hint">click to edit</p>
 
   <div class="modal-backdrop" data-tests-target="modal" data-action="click->tests#closeEditorOnBackdrop" hidden>
-    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="tests_edit_heading">
+    <div class="modal-card modal-card--with-close" role="dialog" aria-modal="true" aria-labelledby="tests_edit_heading">
+      <button class="modal-close" aria-label="Close test editor" data-action="tests#closeEditor">&times;</button>
       <h2 id="tests_edit_heading" class="modal-title">Edit test</h2>
       <div class="form-row">
         <div class="form-field">
@@ -71,7 +72,6 @@
       <div class="form-actions">
         <button class="btn btn--primary" data-action="tests#saveEdit">Save changes</button>
         <button class="btn btn--danger" data-action="tests#requestDeleteConfirmation">Delete</button>
-        <button class="btn btn--ghost" data-action="tests#closeEditor">Cancel</button>
       </div>
     </div>
   </div>

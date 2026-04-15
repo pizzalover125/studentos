@@ -2,8 +2,15 @@ import { Controller } from "@hotwired/stimulus"
 
 const KEY = "student_os.theme"
 const DEFAULT_THEME_ID = "indigo"
-const DEFAULT_MODE = "light"
+const DEFAULT_MODE = "dark"
 const DEFAULT_FONT_ID = "sans"
+const DEFAULT_SIDEBAR_MODE = "pinned"
+const DEFAULT_CLOCK_SETTINGS = {
+  includeDate: true,
+  includeSeconds: false,
+  includeAmPm: true,
+  militaryTime: false
+}
 const THEMES = [
   { id: "indigo", accent: "#4f46e5", hover: "#4338ca" },
   { id: "blue", accent: "#2563eb", hover: "#1d4ed8" },
@@ -32,13 +39,15 @@ const FONTS = [
 ]
 
 export default class extends Controller {
-  static targets = ["modal", "option", "modeOption", "fontOption", "error"]
+  static targets = ["modal", "option", "modeOption", "fontOption", "sidebarOption", "clockOption", "error"]
 
   connect() {
     const stored = this.readStorage()
     this.selectedThemeId = this.validThemeId(stored?.themeId) || DEFAULT_THEME_ID
     this.selectedMode = this.validMode(stored?.mode || this.legacyMode(stored?.darkMode)) || DEFAULT_MODE
     this.selectedFontId = this.validFontId(stored?.fontId) || DEFAULT_FONT_ID
+    this.selectedSidebarMode = this.validSidebarMode(stored?.sidebarMode) || DEFAULT_SIDEBAR_MODE
+    this.clockSettings = this.normalizeClockSettings(stored?.clock)
     this.mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
     this.handleSystemModeChange = () => {
       if (this.selectedMode === "system") this.applyCurrentTheme()
@@ -52,32 +61,19 @@ export default class extends Controller {
   }
 
   open() {
-    this.openSnapshot = {
-      themeId: this.selectedThemeId,
-      mode: this.selectedMode,
-      fontId: this.selectedFontId
-    }
-    this.skipRevertOnClose = false
     this.markSelectedTheme()
     this.markSelectedMode()
     this.markSelectedFont()
+    this.markSelectedSidebar()
+    this.markSelectedClock()
     this.errorTarget.textContent = ""
     this.modalTarget.hidden = false
     this.optionTargets[0]?.focus()
   }
 
   close() {
-    if (!this.skipRevertOnClose && this.openSnapshot) {
-      this.selectedThemeId = this.openSnapshot.themeId
-      this.selectedMode = this.openSnapshot.mode
-      this.selectedFontId = this.openSnapshot.fontId
-      this.applyCurrentTheme()
-    }
-
     this.modalTarget.hidden = true
     this.errorTarget.textContent = ""
-    this.openSnapshot = null
-    this.skipRevertOnClose = false
   }
 
   closeOnBackdrop(event) {
@@ -89,30 +85,42 @@ export default class extends Controller {
     this.selectedThemeId = event.currentTarget.dataset.themeId
     this.markSelectedTheme()
     this.applyCurrentTheme()
+    this.persistCurrentSettings()
   }
 
   selectMode(event) {
     this.selectedMode = this.validMode(event.currentTarget.dataset.mode) || DEFAULT_MODE
     this.markSelectedMode()
     this.applyCurrentTheme()
+    this.persistCurrentSettings()
   }
 
   selectFont(event) {
     this.selectedFontId = this.validFontId(event.currentTarget.dataset.fontId) || DEFAULT_FONT_ID
     this.markSelectedFont()
     this.applyCurrentTheme()
+    this.persistCurrentSettings()
+  }
+
+  selectSidebar(event) {
+    this.selectedSidebarMode = this.validSidebarMode(event.currentTarget.dataset.sidebarMode) || DEFAULT_SIDEBAR_MODE
+    this.markSelectedSidebar()
+    this.applyCurrentTheme()
+    this.persistCurrentSettings()
+  }
+
+  selectClock(event) {
+    const setting = event.currentTarget.dataset.clockSetting
+    const value = this.booleanFromDataset(event.currentTarget.dataset.clockValue)
+    if (!Object.prototype.hasOwnProperty.call(DEFAULT_CLOCK_SETTINGS, setting) || value === null) return
+
+    this.clockSettings = { ...this.clockSettings, [setting]: value }
+    this.markSelectedClock()
+    this.persistCurrentSettings()
   }
 
   save() {
-    const theme = this.currentTheme()
-    if (!theme) {
-      this.errorTarget.textContent = "Please select a theme."
-      return
-    }
-
-    this.applyTheme(theme.accent, theme.hover, this.selectedMode, this.selectedFontId)
-    this.writeStorage({ themeId: theme.id, mode: this.selectedMode, fontId: this.selectedFontId })
-    this.skipRevertOnClose = true
+    this.persistCurrentSettings()
     this.close()
   }
 
@@ -120,19 +128,20 @@ export default class extends Controller {
     this.selectedThemeId = DEFAULT_THEME_ID
     this.selectedMode = DEFAULT_MODE
     this.selectedFontId = DEFAULT_FONT_ID
+    this.selectedSidebarMode = DEFAULT_SIDEBAR_MODE
+    this.clockSettings = { ...DEFAULT_CLOCK_SETTINGS }
     const theme = this.currentTheme()
-    this.applyTheme(theme.accent, theme.hover, DEFAULT_MODE, DEFAULT_FONT_ID)
+    this.applyTheme(theme.accent, theme.hover, DEFAULT_MODE, DEFAULT_FONT_ID, DEFAULT_SIDEBAR_MODE)
     this.removeStorage()
-    this.skipRevertOnClose = true
     this.close()
   }
 
   applyCurrentTheme() {
     const theme = this.currentTheme()
-    this.applyTheme(theme.accent, theme.hover, this.selectedMode, this.selectedFontId)
+    this.applyTheme(theme.accent, theme.hover, this.selectedMode, this.selectedFontId, this.selectedSidebarMode)
   }
 
-  applyTheme(accent, accentHover, mode, fontId) {
+  applyTheme(accent, accentHover, mode, fontId, sidebarMode) {
     const root = document.documentElement
     const resolvedMode = mode === "system"
       ? (this.mediaQuery.matches ? "dark" : "light")
@@ -145,6 +154,8 @@ export default class extends Controller {
     root.dataset.themeMode = resolvedMode
     root.dataset.themePreference = mode
     root.dataset.themeFont = font.id
+    root.dataset.sidebarMode = sidebarMode
+    this.applyFavicon(accent)
   }
 
   currentTheme() {
@@ -183,12 +194,46 @@ export default class extends Controller {
     })
   }
 
+  markSelectedSidebar() {
+    this.sidebarOptionTargets.forEach(option => {
+      const selected = option.dataset.sidebarMode === this.selectedSidebarMode
+      option.classList.toggle("theme-mode-option--selected", selected)
+      option.setAttribute("aria-pressed", selected ? "true" : "false")
+    })
+  }
+
+  markSelectedClock() {
+    this.clockOptionTargets.forEach(option => {
+      const setting = option.dataset.clockSetting
+      const expected = this.clockSettings[setting]
+      const value = this.booleanFromDataset(option.dataset.clockValue)
+      const selected = typeof expected === "boolean" && value === expected
+      option.classList.toggle("theme-mode-option--selected", selected)
+      option.setAttribute("aria-pressed", selected ? "true" : "false")
+    })
+  }
+
   validMode(value) {
     return ["light", "dark", "system"].includes(value) ? value : null
   }
 
   validFontId(value) {
     return FONTS.some(font => font.id === value) ? value : null
+  }
+
+  validSidebarMode(value) {
+    return ["pinned", "hover"].includes(value) ? value : null
+  }
+
+  persistCurrentSettings() {
+    const theme = this.currentTheme()
+    this.writeStorage({
+      themeId: theme.id,
+      mode: this.selectedMode,
+      fontId: this.selectedFontId,
+      sidebarMode: this.selectedSidebarMode,
+      clock: this.clockSettings
+    })
   }
 
   legacyMode(darkModeValue) {
@@ -219,5 +264,41 @@ export default class extends Controller {
     } catch {
       // noop
     }
+  }
+
+  applyFavicon(accent) {
+    const safeAccent = /^#[0-9a-fA-F]{6}$/.test(accent) ? accent : THEMES[0].accent
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='${safeAccent}'/></svg>`
+    const href = `data:image/svg+xml,${encodeURIComponent(svg)}`
+    let link = document.querySelector("link[data-theme-favicon='true']")
+
+    if (!link) {
+      link = document.createElement("link")
+      link.setAttribute("rel", "icon")
+      link.setAttribute("type", "image/svg+xml")
+      link.setAttribute("data-theme-favicon", "true")
+      document.head.appendChild(link)
+    }
+
+    link.setAttribute("href", href)
+  }
+
+  normalizeClockSettings(clock) {
+    return {
+      includeDate: this.booleanSetting(clock?.includeDate, DEFAULT_CLOCK_SETTINGS.includeDate),
+      includeSeconds: this.booleanSetting(clock?.includeSeconds, DEFAULT_CLOCK_SETTINGS.includeSeconds),
+      includeAmPm: this.booleanSetting(clock?.includeAmPm, DEFAULT_CLOCK_SETTINGS.includeAmPm),
+      militaryTime: this.booleanSetting(clock?.militaryTime, DEFAULT_CLOCK_SETTINGS.militaryTime)
+    }
+  }
+
+  booleanSetting(value, fallback) {
+    return typeof value === "boolean" ? value : fallback
+  }
+
+  booleanFromDataset(value) {
+    if (value === "true") return true
+    if (value === "false") return false
+    return null
   }
 }

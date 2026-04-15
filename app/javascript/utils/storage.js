@@ -1,7 +1,13 @@
+function namespacedKey(key) {
+  const namespace = document.documentElement?.dataset?.storageNamespace
+  return namespace ? `${key}.${namespace}` : key
+}
+
 export function storageAvailable() {
   try {
-    localStorage.setItem("__test__", "1")
-    localStorage.removeItem("__test__")
+    const testKey = namespacedKey("__test__")
+    localStorage.setItem(testKey, "1")
+    localStorage.removeItem(testKey)
     return true
   } catch {
     return false
@@ -9,16 +15,17 @@ export function storageAvailable() {
 }
 
 export function readStorage(key) {
+  const storageKey = namespacedKey(key)
   try {
-    return JSON.parse(localStorage.getItem(key)) || []
+    return JSON.parse(localStorage.getItem(storageKey)) || []
   } catch {
-    localStorage.removeItem(key)
+    localStorage.removeItem(storageKey)
     return []
   }
 }
 
 export function writeStorage(key, data) {
-  localStorage.setItem(key, JSON.stringify(data))
+  localStorage.setItem(namespacedKey(key), JSON.stringify(data))
 }
 
 export function escapeHtml(str) {

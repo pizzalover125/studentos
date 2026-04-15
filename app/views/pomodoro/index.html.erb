@@ -13,7 +13,8 @@
   </div>
 
   <div class="modal-backdrop" data-pomodoro-target="settingsModal" data-action="click->pomodoro#closeSettingsOnBackdrop" hidden>
-    <div class="modal-card modal-card--confirm" role="dialog" aria-modal="true" aria-labelledby="pomodoro_settings_heading">
+    <div class="modal-card modal-card--confirm modal-card--with-close" role="dialog" aria-modal="true" aria-labelledby="pomodoro_settings_heading">
+      <button class="modal-close" aria-label="Close pomodoro settings" data-action="pomodoro#closeSettings">&times;</button>
       <h2 id="pomodoro_settings_heading" class="modal-title">Pomodoro settings</h2>
       <div class="form-field">
         <label for="pomodoro_work_minutes">Work minutes</label>
@@ -26,7 +27,6 @@
       <p class="error-msg" data-pomodoro-target="settingsError"></p>
       <div class="form-actions">
         <button class="btn btn--primary" data-action="pomodoro#saveSettings">Save</button>
-        <button class="btn btn--ghost" data-action="pomodoro#closeSettings">Cancel</button>
       </div>
     </div>
   </div>

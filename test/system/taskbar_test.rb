@@ -43,4 +43,23 @@ class TaskbarTest < ApplicationSystemTestCase
     assert_no_selector "[data-taskbar-target='decisionModal']:not([hidden])"
     assert_no_selector "[data-taskbar-target='pomodoro']:not([hidden])"
   end
+
+  test "clock respects stored display settings" do
+    visit homework_path
+    page.execute_script(<<~JS)
+      localStorage.setItem('student_os.theme', JSON.stringify({
+        clock: {
+          includeDate: false,
+          includeSeconds: true,
+          includeAmPm: false,
+          militaryTime: true
+        }
+      }))
+    JS
+
+    visit classes_path
+    clock_text = page.find("[data-taskbar-target='clock']").text.strip
+    assert_match(/^\d{2}:\d{2}:\d{2}$/, clock_text)
+  end
+
 end

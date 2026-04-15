@@ -1,32 +1,42 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-storage-namespace="<%= review_mode? ? 'review' : '' %>" data-review-mode="<%= review_mode? %>">
   <head>
     <title>Student OS</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      data-theme-favicon="true"
+      href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2032%2032%27%3E%3Crect%20width%3D%2732%27%20height%3D%2732%27%20rx%3D%276%27%20fill%3D%27%234f46e5%27/%3E%3C/svg%3E"
+    >
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Lora:wght@400;500;600&family=Merriweather:wght@400;700&family=Press+Start+2P&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <script src="https://w.soundcloud.com/player/api.js"></script>
     <%= javascript_importmap_tags %>
   </head>
   <body>
     <div class="app" data-controller="theme taskbar">
+      <div class="sidebar-hover-zone" aria-hidden="true"></div>
       <aside class="sidebar">
         <div class="sidebar__title">Student OS</div>
-        <%= link_to "Classes", classes_path,
-              class: "sidebar__link #{current_page?(classes_path) ? 'sidebar__link--active' : ''}" %>
-        <%= link_to "Homework", homework_path,
-              class: "sidebar__link #{current_page?(homework_path) || current_page?(root_path) ? 'sidebar__link--active' : ''}" %>
-        <%= link_to "Tests", tests_path,
-              class: "sidebar__link #{current_page?(tests_path) ? 'sidebar__link--active' : ''}" %>
-        <%= link_to "Pomodoro", pomodoro_path,
-              class: "sidebar__link #{current_page?(pomodoro_path) ? 'sidebar__link--active' : ''}" %>
-        <%= link_to "Volunteer", volunteer_path,
-              class: "sidebar__link #{current_page?(volunteer_path) ? 'sidebar__link--active' : ''}" %>
-        <%= link_to "Extracurriculars", extracurriculars_path,
-              class: "sidebar__link #{current_page?(extracurriculars_path) ? 'sidebar__link--active' : ''}" %>
+        <%= link_to "Classes", app_path(:classes_path),
+              class: "sidebar__link #{current_page?(app_path(:classes_path)) ? 'sidebar__link--active' : ''}" %>
+        <%= link_to "Homework", app_path(:homework_path),
+              class: "sidebar__link #{current_page?(app_path(:homework_path)) || current_page?(app_path(:root_path)) ? 'sidebar__link--active' : ''}" %>
+        <%= link_to "Tests", app_path(:tests_path),
+              class: "sidebar__link #{current_page?(app_path(:tests_path)) ? 'sidebar__link--active' : ''}" %>
+        <%= link_to "Pomodoro", app_path(:pomodoro_path),
+              class: "sidebar__link #{current_page?(app_path(:pomodoro_path)) ? 'sidebar__link--active' : ''}" %>
+        <%= link_to "Volunteer", app_path(:volunteer_path),
+              class: "sidebar__link #{current_page?(app_path(:volunteer_path)) ? 'sidebar__link--active' : ''}" %>
+        <%= link_to "Extracurriculars", app_path(:extracurriculars_path),
+              class: "sidebar__link #{current_page?(app_path(:extracurriculars_path)) ? 'sidebar__link--active' : ''}" %>
+        <%= link_to "Music", app_path(:music_path),
+              class: "sidebar__link #{current_page?(app_path(:music_path)) ? 'sidebar__link--active' : ''}" %>
       </aside>
       <main class="main">
         <%= yield %>
@@ -59,7 +69,8 @@
       </button>
 
       <div class="modal-backdrop" data-theme-target="modal" data-action="click->theme#closeOnBackdrop" hidden>
-        <div class="modal-card modal-card--confirm" role="dialog" aria-modal="true" aria-labelledby="theme_settings_heading">
+        <div class="modal-card modal-card--with-close modal-card--settings" role="dialog" aria-modal="true" aria-labelledby="theme_settings_heading">
+          <button class="modal-close" aria-label="Close settings" data-action="theme#close">&times;</button>
           <h2 id="theme_settings_heading" class="theme-mode-label">Color</h2>
           <div class="theme-options" role="radiogroup" aria-label="Theme options">
             <% [
@@ -132,6 +143,144 @@
             </div>
           </div>
 
+          <div class="theme-mode-row">
+            <div class="theme-mode-label">Sidebar</div>
+            <div class="theme-mode-picker" role="radiogroup" aria-label="Sidebar behavior">
+              <button
+                type="button"
+                class="theme-mode-option"
+                aria-label="Always visible sidebar"
+                data-theme-target="sidebarOption"
+                data-sidebar-mode="pinned"
+                data-action="theme#selectSidebar"
+              >
+                Always visible
+              </button>
+              <button
+                type="button"
+                class="theme-mode-option"
+                aria-label="Hover to reveal sidebar"
+                data-theme-target="sidebarOption"
+                data-sidebar-mode="hover"
+                data-action="theme#selectSidebar"
+              >
+                Hover to reveal
+              </button>
+            </div>
+          </div>
+
+          <div class="theme-mode-row">
+            <div class="theme-mode-label">Show date</div>
+            <div class="theme-mode-picker" role="radiogroup" aria-label="Taskbar date display">
+              <button
+                type="button"
+                class="theme-mode-option"
+                aria-label="Show date in taskbar"
+                data-theme-target="clockOption"
+                data-clock-setting="includeDate"
+                data-clock-value="true"
+                data-action="theme#selectClock"
+              >
+                On
+              </button>
+              <button
+                type="button"
+                class="theme-mode-option"
+                aria-label="Hide date in taskbar"
+                data-theme-target="clockOption"
+                data-clock-setting="includeDate"
+                data-clock-value="false"
+                data-action="theme#selectClock"
+              >
+                Off
+              </button>
+            </div>
+          </div>
+
+          <div class="theme-mode-row">
+            <div class="theme-mode-label">Show seconds</div>
+            <div class="theme-mode-picker" role="radiogroup" aria-label="Taskbar seconds display">
+              <button
+                type="button"
+                class="theme-mode-option"
+                aria-label="Show seconds in taskbar"
+                data-theme-target="clockOption"
+                data-clock-setting="includeSeconds"
+                data-clock-value="true"
+                data-action="theme#selectClock"
+              >
+                On
+              </button>
+              <button
+                type="button"
+                class="theme-mode-option"
+                aria-label="Hide seconds in taskbar"
+                data-theme-target="clockOption"
+                data-clock-setting="includeSeconds"
+                data-clock-value="false"
+                data-action="theme#selectClock"
+              >
+                Off
+              </button>
+            </div>
+          </div>
+
+          <div class="theme-mode-row">
+            <div class="theme-mode-label">AM/PM</div>
+            <div class="theme-mode-picker" role="radiogroup" aria-label="Taskbar AM PM display">
+              <button
+                type="button"
+                class="theme-mode-option"
+                aria-label="Show AM PM in taskbar"
+                data-theme-target="clockOption"
+                data-clock-setting="includeAmPm"
+                data-clock-value="true"
+                data-action="theme#selectClock"
+              >
+                On
+              </button>
+              <button
+                type="button"
+                class="theme-mode-option"
+                aria-label="Hide AM PM in taskbar"
+                data-theme-target="clockOption"
+                data-clock-setting="includeAmPm"
+                data-clock-value="false"
+                data-action="theme#selectClock"
+              >
+                Off
+              </button>
+            </div>
+          </div>
+
+          <div class="theme-mode-row">
+            <div class="theme-mode-label">Military time</div>
+            <div class="theme-mode-picker" role="radiogroup" aria-label="Taskbar 24 hour time">
+              <button
+                type="button"
+                class="theme-mode-option"
+                aria-label="Enable military time"
+                data-theme-target="clockOption"
+                data-clock-setting="militaryTime"
+                data-clock-value="true"
+                data-action="theme#selectClock"
+              >
+                On
+              </button>
+              <button
+                type="button"
+                class="theme-mode-option"
+                aria-label="Disable military time"
+                data-theme-target="clockOption"
+                data-clock-setting="militaryTime"
+                data-clock-value="false"
+                data-action="theme#selectClock"
+              >
+                Off
+              </button>
+            </div>
+          </div>
+
           <div class="theme-font-row">
             <div class="theme-mode-label">Font</div>
             <div class="theme-font-options" role="radiogroup" aria-label="Font options">
@@ -160,9 +309,7 @@
 
           <p class="error-msg" data-theme-target="error"></p>
           <div class="form-actions">
-            <button class="btn btn--primary" data-action="theme#save">Save</button>
             <button class="btn btn--ghost" data-action="theme#reset">Reset</button>
-            <button class="btn btn--ghost" data-action="theme#close">Cancel</button>
           </div>
         </div>
       </div>
